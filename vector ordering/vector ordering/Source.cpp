@@ -16,13 +16,13 @@ public:
 	int getAge();
 };
 
-bool compare(Luke l1, Luke l2);
+bool compare(Luke *l1, Luke *l2);
 
 int main() {
 
 	cout << "starting program"<<endl<<endl;
 	system("pause");
-	vector<Luke> listofLukes;
+	vector<Luke *> listofLukes;
 
 	Luke *Utke = new Luke;
 	Utke->init(26, true, "Utke");
@@ -73,8 +73,8 @@ int Luke::getAge(){
 	return age;
 }
 
-bool compare(Luke l1, Luke l2) { 
-	if (l1.getAge() < l2.getAge())
+bool compare(Luke *l1, Luke *l2) { 
+	if (l1->getAge() < l2->getAge())
 		return true;
 	else
 		return false;
