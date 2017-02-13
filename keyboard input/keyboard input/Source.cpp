@@ -7,16 +7,20 @@ int main()
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_BITMAP *square = NULL;
+	ALLEGRO_BITMAP *square2 = NULL;
 
 	//these two variables hold the x and y positions of the square
 	//initalize these variables to where you want your square to start
 	float square_x = 50;
 	float square_y = 50;
 
+	float square2_x = 150;
+	float square2_y = 50;
+
 	//here's our key states. they're all starting as "false" because nothing has been pressed yet.
 	//the first slot represents "up", then "down", "left" and "right"
 	bool key[4] = { false, false, false, false };
-
+	bool key2[4] = { false, false, false, false };
 	//don't redraw until an event happens
 	bool redraw = true;
 
@@ -34,9 +38,15 @@ int main()
 
 	square = al_create_bitmap(32, 32);
 
+	square2 = al_create_bitmap(12, 12);
+
 	al_set_target_bitmap(square);
 
 	al_clear_to_color(al_map_rgb(255, 255, 255));
+
+	al_set_target_bitmap(square2);
+
+	al_clear_to_color(al_map_rgb(255, 0, 255));
 
 	al_set_target_bitmap(al_get_backbuffer(display));
 
@@ -47,7 +57,7 @@ int main()
 
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
-	//new! tell the event queue that it should take keyboard events, too 
+	//new! tell the event queue that it should take keyboard events, too
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -56,7 +66,7 @@ int main()
 
 	al_start_timer(timer);
 
-	//so the game loop is set to act on "ticks" of the timer OR keyboard presses 
+	//so the game loop is set to act on "ticks" of the timer OR keyboard presses
 	//OR the mouse closing the display
 	while (!doexit)
 	{
@@ -72,22 +82,33 @@ int main()
 			if (key[0] && square_y >= 0) {
 				square_y -= 4.0;
 			}
-
+			if (key2[0] && square2_y >= 0) {
+				square2_y -= 4.0;
+			}
 			//if the down button is pressed AND we're still above the bottom wall
 			//move the box "down" by 4 pixels
-			if (key[1] && square_y <= 480-32) {
+			if (key[1] && square_y <= 480 - 32) {
 				square_y += 4.0;
+			}
+			if (key2[1] && square2_y <= 480 - 32) {
+				square2_y += 4.0;
 			}
 			//if the left button is pressed AND we're still right of the left wall
 			//move the box left by 4 pixels
 			if (key[2] && square_x >= 0) {
 				square_x -= 4.0;
 			}
+			if (key2[2] && square2_x >= 0) {
+				square2_x -= 4.0;
+			}
 
 			//if the left button is pressed AND we're still left of the right wall
 			//move the box right by 4 pixels
 			if (key[3] && square_x <= 640 - 32) {
 				square_x += 4.0;
+			}
+			if (key2[3] && square2_x <= 640 - 32) {
+				square2_x += 4.0;
 			}
 
 			//redraw at every tick of the timer
@@ -129,7 +150,28 @@ int main()
 			case ALLEGRO_KEY_RIGHT:
 				key[3] = true;
 				break;
-			}
+			
+
+			//if the up key has been pressed
+			case ALLEGRO_KEY_W:
+				key2[0] = true;
+				break;
+
+				//if the down key has been pressed
+			case ALLEGRO_KEY_S:
+				key2[1] = true;
+				break;
+
+				//if the left key has been pressed
+			case ALLEGRO_KEY_A:
+				key2[2] = true;
+				break;
+
+				//if the right key has been pressed
+			case ALLEGRO_KEY_D:
+				key2[3] = true;
+				break;
+		}
 		}
 		//has something been released on the keyboard?
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
@@ -148,6 +190,21 @@ int main()
 
 			case ALLEGRO_KEY_RIGHT:
 				key[3] = false;
+				break;
+			case ALLEGRO_KEY_W:
+				key2[0] = false;
+				break;
+
+			case ALLEGRO_KEY_S:
+				key2[1] = false;
+				break;
+
+			case ALLEGRO_KEY_A:
+				key2[2] = false;
+				break;
+
+			case ALLEGRO_KEY_D:
+				key2[3] = false;
 				break;
 
 				//kill the program if someone presses escape
@@ -169,7 +226,7 @@ int main()
 			//the algorithm above just changes the x and y coordinates
 			//here's where the bitmap is actually drawn somewhere else
 			al_draw_bitmap(square, square_x, square_y, 0);
-
+			al_draw_bitmap(square2, square2_x, square2_y, 0);
 			al_flip_display();
 		}
 	}

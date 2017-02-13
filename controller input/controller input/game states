@@ -1,0 +1,333 @@
+//#include <allegro5/allegro.h>
+//#include <allegro5/allegro_image.h>
+//#include <allegro5/allegro_primitives.h>
+//#include <allegro5/allegro_font.h>
+//#include <allegro5/allegro_ttf.h>
+//#include "mappy_A5.h" //include this to use the mappy functions
+//#include <iostream>
+//using namespace std;
+//const int WIDTH = 800;
+//const int HEIGHT = 600;
+//
+//bool keys[] = {false, false, false, false, false, false};
+//enum KEYS{UP, DOWN, LEFT, RIGHT, SPACE, ESCAPE};
+//
+//struct Background
+//{
+//	float x;
+//	float y;
+//
+//	float velX;
+//	float velY;
+//
+//	int dirX;
+//	int dirY;
+//
+//	int width;
+//	int height;
+//
+//	ALLEGRO_BITMAP *image;
+//};
+//
+////function declarations
+//int collided(int x, int y, int xOff, int yOff);
+//int playerCollidedWithGround(int x, int y, int xOff, int yOff, int dy);
+//void InitBackground(Background &back, float x, float y, float velx, float vely, int width, int height, int dirX, int dirY, ALLEGRO_BITMAP *image);
+//void UpdateBackground(Background &back);
+//
+//void DrawBackground(Background &back);
+//
+//
+////store your different states here
+//enum STATE{MENU, FLYING, PLANET1,};
+//
+//
+//
+////prototype for change state function
+//void ChangeState(int &state, int newState);
+//
+//int main(int argc, char **argv)
+//{
+//	//==============================================
+//	//SHELL VARIABLES
+//	//==============================================
+//	bool done = false;
+//	bool render = false;
+//
+//	float gameTime = 0;
+//	int frames = 0;
+//	int gameFPS = 0;
+//
+//	//==============================================
+//	//PROJECT VARIABLES
+//	//==============================================
+//	int state = -1;
+//
+//	//==============================================
+//	//ALLEGRO VARIABLES
+//	//==============================================
+//	ALLEGRO_DISPLAY *display = NULL;
+//	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+//	ALLEGRO_TIMER *timer;
+//	ALLEGRO_FONT *font18;
+//	ALLEGRO_BITMAP *bgImage = NULL;
+//	ALLEGRO_BITMAP *mgImage = NULL;
+//	Background BG;
+//	Background MG;
+//	//==============================================
+//	//ALLEGRO INIT FUNCTIONS
+//	//==============================================
+//	if(!al_init())										//initialize Allegro
+//		return -1;
+//
+//	display = al_create_display(WIDTH, HEIGHT);			//create our display object
+//
+//	if(!display)										//test display object
+//		return -1;
+//
+//	//==============================================
+//	//ADDON INSTALL
+//	//==============================================
+//	al_install_keyboard();
+//	al_init_image_addon();
+//	al_init_font_addon();
+//	al_init_ttf_addon();
+//	al_init_primitives_addon();
+//
+//
+//	//==============================================
+//	//PROJECT INIT
+//	//==============================================
+//	font18 = al_load_font("bloodthirsty.ttf", 18, 0);
+//	bgImage = al_load_bitmap("marioBG.png");
+//	mgImage = al_load_bitmap("barry.png");
+//	//
+//	al_convert_mask_to_alpha(mgImage,al_map_rgb(255,255,255) );
+//	al_convert_mask_to_alpha(bgImage,al_map_rgb(255,255,255) );
+//	//before game starts, set state to menu
+//	ChangeState(state, MENU);
+//
+//	//==============================================
+//	//TIMER INIT AND STARTUP
+//	//==============================================
+//	event_queue = al_create_event_queue();
+//	timer = al_create_timer(1.0 / 60);
+//	InitBackground(BG, 0, 0, 1, 0, 768,1229, -1, 1, bgImage);
+//	InitBackground(MG, 0, 0, 5, 0, 768,1229, -1, 1, mgImage);
+//	al_register_event_source(event_queue, al_get_timer_event_source(timer));
+//	al_register_event_source(event_queue, al_get_keyboard_event_source());
+//
+//	al_start_timer(timer);
+//	gameTime = al_current_time();
+//	while(!done)
+//	{
+//		ALLEGRO_EVENT ev;
+//		al_wait_for_event(event_queue, &ev);
+//
+//		//==============================================
+//		//INPUT
+//		//==============================================
+//		if(ev.type == ALLEGRO_EVENT_KEY_DOWN)
+//		{
+//			switch(ev.keyboard.keycode)
+//			{
+//			case ALLEGRO_KEY_ESCAPE:
+//				keys[ESCAPE] = true;
+//				break;
+//			case ALLEGRO_KEY_LEFT:
+//				keys[LEFT] = true;
+//				break;
+//			case ALLEGRO_KEY_RIGHT:
+//				keys[RIGHT] = true;
+//				break;
+//			case ALLEGRO_KEY_UP:
+//				keys[UP] = true;
+//				break;
+//			case ALLEGRO_KEY_DOWN:
+//				keys[DOWN] = true;
+//				break;
+//			case ALLEGRO_KEY_SPACE:
+//				keys[FLYING] = true;
+//				break;
+//			}
+//		}
+//		else if(ev.type == ALLEGRO_EVENT_KEY_UP)
+//		{
+//			switch(ev.keyboard.keycode)
+//			{
+//			case ALLEGRO_KEY_ESCAPE:
+//				keys[ESCAPE] = false;
+//				break;
+//			case ALLEGRO_KEY_LEFT:
+//				keys[LEFT] = false;
+//				break;
+//			case ALLEGRO_KEY_RIGHT:
+//				keys[RIGHT] = false;
+//				break;
+//			case ALLEGRO_KEY_UP:
+//				keys[UP] = false;
+//				break;
+//			case ALLEGRO_KEY_DOWN:
+//				keys[DOWN] = false;
+//				break;
+//			case ALLEGRO_KEY_SPACE:
+//				keys[FLYING] = false;
+//				break;
+//			}
+//		}
+//		//==============================================
+//		//GAME UPDATE
+//		//==============================================
+//		else if(ev.type == ALLEGRO_EVENT_TIMER)
+//		{
+//			render = true;
+//
+//			//this has nothing to do with game states!
+//			//UPDATE FPS===========
+//			frames++;
+//			if(al_current_time() - gameTime >= 1)
+//			{
+//				gameTime = al_current_time();
+//				gameFPS = frames;
+//				frames = 0;
+//			}
+//			//=====================
+//
+//			//here's where you change the game's state based on user input
+//			if(state == MENU)
+//			{
+//				if(keys[FLYING])
+//					ChangeState(state, FLYING);
+//			}
+//			else if(state == FLYING)
+//			{
+//	
+//
+//				if(keys[FLYING]) //if player's x and y overlap planet 1
+//					ChangeState(state, PLANET1);
+//			}
+//			else if(state == PLANET1)
+//			{
+//				UpdateBackground(BG);
+//				UpdateBackground(MG);
+//				if(keys[ESCAPE])
+//					done = true; //kill game
+//
+//				if(keys[UP]) //if player's x and y overlap spaceship
+//					ChangeState(state, FLYING);
+//			}
+//		}
+//
+//		//==============================================
+//		//RENDER
+//		//==============================================
+//		if(render && al_is_event_queue_empty(event_queue))
+//		{
+//			render = false;
+//			al_draw_textf(font18, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);	//display FPS on screen
+//
+//			//BEGIN PROJECT RENDER================
+//			//draw different things based on what state you're in
+//			if(state == MENU)
+//			{
+//				al_draw_text(font18, al_map_rgb(255, 255, 255), WIDTH / 2, HEIGHT / 2, ALLEGRO_ALIGN_CENTRE, "Press space to play");
+//			}
+//			else if(state == FLYING)
+//			{
+//				al_draw_text(font18, al_map_rgb(255, 255, 255), WIDTH / 2, HEIGHT / 2, ALLEGRO_ALIGN_CENTRE, "imagine you're flying, wheee!");
+//			
+//			}
+//			else if(state == PLANET1)
+//			{
+//					DrawBackground(BG);
+//				DrawBackground(MG);
+//				al_draw_text(font18, al_map_rgb(255, 255, 255), WIDTH / 2, HEIGHT / 2, ALLEGRO_ALIGN_CENTRE, "welcome to planet x");
+//			}
+//
+//			//FLIP BUFFERS========================
+//			al_flip_display();
+//			al_clear_to_color(al_map_rgb(0,0,0));
+//		}
+//	}
+//
+//	//==============================================
+//	//DESTROY PROJECT OBJECTS
+//	//==============================================
+//
+//	//SHELL OBJECTS=================================
+//	al_destroy_font(font18);
+//	al_destroy_timer(timer);
+//	al_destroy_event_queue(event_queue);
+//	al_destroy_display(display);
+//
+//	return 0;
+//}
+//
+////change state function
+//void ChangeState(int &state, int newState)
+//{
+//	if(state == MENU)
+//	{
+//		cout << "Leaving the MENU state\n";
+//	}
+//	else if(state == FLYING)
+//	{
+//		cout << "Leaving the FLYING state\n";
+//	}
+//	else if(state == PLANET1)
+//	{
+//		cout << "Leaving the PLANET1 state\n";
+//	}
+//
+//	state = newState;
+//
+//	if(state == MENU)
+//	{
+//		cout << "Entering the MENU state\n";
+//	}
+//	else if(state == FLYING)
+//	{
+//		cout << "Entering the FLYING state\n";
+//	}
+//	else if(state == PLANET1)
+//	{
+//		cout << "Entering the PLANET1 state\n";
+//	}
+//}
+//
+////function update background moves the image across the screen
+//void UpdateBackground(Background &back)
+//{
+//	//to "move" the background, add its current position to its velocity times its direction
+//	back.x += back.velX * back.dirX;
+//
+//	//if our position walks off the end of the image, reset the position to zero
+//	if(back.x + back.width <= 0)
+//		back.x = 0;
+//}
+//
+//void DrawBackground(Background &back)
+//{
+//	//draw it, yo
+//	al_draw_bitmap(back.image, back.x, back.y, 0);
+//
+//	//this smooths out the wrapping action
+//	//if the position plus the width of the background is less than the screen width
+//	//(this happens when back.x gets really negative)
+//	//draw a SECOND background image so the front of it attaches to the back of the first image
+//	if(back.x + back.width < WIDTH)
+//		al_draw_bitmap(back.image, back.x + back.width, back.y, 0);
+//}
+////function initalize background sets the location, speed, size, and picture for a background image
+//void InitBackground(Background &back, float x, float y, float velx, float vely, int width, int height, int dirX, int dirY, ALLEGRO_BITMAP *image)
+//{
+//	back.x = x;
+//	back.y = y;
+//	back.velX = velx;
+//	back.velY = vely;
+//	back.width = width;
+//	back.height = height;
+//	back.dirX = dirX;
+//	back.dirY = dirY;
+//	back.image = image;
+//}
